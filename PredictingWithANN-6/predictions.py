@@ -34,17 +34,11 @@ for i in range(1000):
 for i in range(50):
     random_younger = randint(13, 64)
     train_samples.append(random_younger)  # storing second 1000
-    train_labels.append(1)
+    train_labels.append(1)  # Appending class label
 
     random_older = randint(65, 100)
     train_samples.append(random_older)  # storing second 50
-    train_labels.append(0)
-
-# for i in train_samples:
-#     print(i)
-
-# for i in train_labels:
-#     print(i)
+    train_labels.append(0)  # Appending class label
 
 # converting training data in to numpy array,
 # bcz `Keras expects data in numpy array`
@@ -58,9 +52,6 @@ scaled_training_samples = scaler.fit_transform(
     .reshape(-1, 1)
 )
 
-# for i in scaled_training_samples:
-#     print(i)
-
 # ---------------------------------------------------------
 # Video Link: https: // youtu.be/_N5kpSMDf4o
 
@@ -73,5 +64,39 @@ model = Sequential([
 model.compile(Adam(learning_rate=.0001),
               loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-model.fit(scaled_training_samples, train_labels,
+# The below code has `validation_split=0.20`, which splits the given test data into 20% validation
+model.fit(scaled_training_samples, train_labels, validation_split=0.20,
           batch_size=10, epochs=20, shuffle=True, verbose=2)
+
+# But, we can alternatively provide `validation data` separately too. As shown below -->
+
+# valid_set = [(sample,label),(sample,label), ... ,(sample,label)]
+# model.fit(scaled_training_samples, train_labels, validation_split=valid_set,batch_size=10, epochs=20, shuffle=True, verbose=2)
+
+
+# ----------------------------Creating dummy test data --------------------
+
+test_samples = []
+
+# dummy 100 Data for patients above age 65
+for i in range(50):
+    random_younger_test = randint(13, 64)
+    test_samples.append(random_younger_test)
+
+    random_older_test = randint(65, 100)
+    test_samples.append(random_older_test)
+
+test_samples = np.array(test_samples)
+
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_test_samples = scaler.fit_transform(
+    (test_samples)
+    .reshape(-1, 1)
+)
+
+# ---------------------- Predicting with Test Data ------------------------
+# Video Link : https://www.youtube.com/watch?v=Z0KVRdE_a7Q
+predictions = model.predict(scaled_test_samples, batch_size=10, verbose=0)
+
+for i in predictions:
+    print(i)
