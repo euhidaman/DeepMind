@@ -70,7 +70,7 @@ model = Sequential([
     Dense(2, activation='softmax')
 ])
 
-model.compile(Adam(lr=.0001),
+model.compile(Adam(learning_rate=.0001),
               loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 model.fit(scaled_training_samples, train_labels,
